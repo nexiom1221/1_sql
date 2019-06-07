@@ -469,3 +469,90 @@ SELECT e.deptno 부서번호
 6. ORDER BY 가 있다면 정렬 조건에 맞추어 최종 정렬하여 결과 출력
 */
 
+----------------------------------------------------------------------
+-- 수업중 실습
+
+-- 1. 매니저별, 부하직원의 수를 구하고, 많은 순으로 정렬
+--   : mgr 컬럼이 그룹화 기준 컬럼
+SELECT e.mgr 매니저별
+      ,COUNT(e.mgr) "부하직원의 수"
+  FROM emp e
+ GROUP BY e.mgr
+ ORDER BY COUNT(e.mgr) desc
+;
+-- 2.1 부서별 인원을 구하고, 인원수 많은 순으로 정렬
+--    : deptno 컬럼이 그룹화 기준 컬럼
+SELECT e.deptno 부서별
+      ,COUNT(e.deptno) "부하직원의 수"
+  FROM emp e
+ GROUP BY e.deptno
+ ORDER BY COUNT(e.deptno) desc
+;
+-- 2.2 부서 배치 미배정 인원 처리
+SELECT NVL(e.deptno,0) 부서별
+      ,COUNT(e.deptno) "부하직원의 수"
+  FROM emp e
+ GROUP BY e.deptno
+ ORDER BY COUNT(e.deptno) desc
+;
+
+-- 3.1 직무별 급여 평균 구하고, 급여평균 높은 순으로 정렬
+--   : job 이 그룹화 기준 컬럼
+SELECT e.job 직무
+      ,TO_CHAR(AVG(e.sal),'$9,999.99') 급여평균
+  FROM emp e
+ GROUP BY e.job,e.sal
+ ORDER BY e.sal desc
+;
+
+-- 3.2 job 이 null 인 데이터 처리
+SELECT NVL(e.job,'직무 미배정') 직무
+      ,TO_CHAR(AVG(e.sal),'$9,999.99') 급여평균
+  FROM emp e
+ GROUP BY e.job,e.sal
+ ORDER BY e.sal desc
+;
+
+-- 4. 직무별 급여 총합 구하고, 총합 높은 순으로 정렬
+--   : job 이 그룹화 기준 컬럼
+SELECT  e.job 직무
+       ,SUM(e.sal) "급여 총합"
+  FROM emp e
+ GROUP BY e.job,e.sal
+ ORDER BY e.sal desc
+;
+
+-- 5. 급여의 앞단위가 1000미만, 1000, 2000, 3000, 5000 별로 인원수를 구하시오
+--    급여 단위 오름차순으로 정렬
+SELECT   WIDTH_BUCKET(e.sal, 0, 5000, 4)||'천달러'  AS "급여(천달러)"
+        ,count(*) as 인원수
+  FROM emp e
+ GROUP BY WIDTH_BUCKET(e.sal, 0, 5000, 4)
+ ORDER BY WIDTH_BUCKET(e.sal, 0, 5000, 4) desc
+;
+-- 6. 직무별 급여 합의 단위를 구하고, 급여 합의 단위가 큰 순으로 정렬
+SELECT   e.sal
+        ,TO_CHAR(SUM(e.sal),'$9,999.99')
+  FROM emp e
+ GROUP BY e.sal
+ ORDER BY e.sal desc
+;
+
+-- 7. 직무별 급여 평균이 2000이하인 경우를 구하고 평균이 높은 순으로 정렬
+SELECT
+         e.job 직무
+        ,TO_CHAR(AVG(e.sal),'$9,999.99') "급여 평균"
+  FROM emp e
+ GROUP BY e.job,e.sal
+ HAVING e.sal<=2000
+ ORDER BY e.sal desc
+;
+
+
+-- 8. 년도별 입사 인원을 구하시오
+SELECT   TO_CHAR(e.hiredate,'YY') AS 년도
+        ,COUNT(*) "입사년도 인원"
+  FROM emp e
+ GROUP BY TO_CHAR(e.hiredate,'YY')
+ ORDER BY TO_CHAR(e.hiredate,'YY')
+;
