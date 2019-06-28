@@ -174,11 +174,11 @@ SELECT COUNT(*)
  FROM employees e
 ;
 
--- 2) employees 테이블에서 SALARY 의 총합,평균,최대,최소를 계산하여 조회
-SELECT COUNT(salary) 총합
-      ,AVG(salary) 평균
-      ,MAX(salary) 최대
-      ,MIN(salary) 최소
+-- 2) employees 테이블에서 SALARY 의 총합,평균,최대,최소를 계산하여 뒤에 $99,999 추가하여 조회
+SELECT TO_CHAR(COUNT(salary),'$99,999') 총합
+      ,TO_CHAR(AVG(salary),'$99,999') 평균
+      ,TO_CHAR(MAX(salary),'$99,999.') 최대
+      ,TO_CHAR(MIN(salary),'$99,999') 최소
   FROM employees e
 ;
 
