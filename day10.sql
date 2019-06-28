@@ -562,7 +562,8 @@ SELECT   e.empno 사번
 --      이때 부서 명으로 출력하시오.
 --      또한 직원이 없는 부서도 출력하시오.
 SELECT   NVL(d.dname,'부서 미배정') "부서 명"
-        ,count(*) "인원 수"            
-  FROM emp e LEFT OUTER JOIN dept d ON (e.deptno = d.deptno)
+        ,count(e.empno) "인원 수"           
+  FROM emp e FULL OUTER JOIN dept d ON (e.deptno = d.deptno)
   GROUP BY d.dname
+  ORDER BY d.dname
 ;   
