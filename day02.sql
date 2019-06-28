@@ -361,6 +361,8 @@ SELECT e.empno 사번
 FROM emp e
 ORDER BY 수당,직무,e.ename
 ;
+-- (10) 번과 동일하나 별칭을 사용한 부분만 차이가남
+--          => 결과: ORDER BY 절에는 별칭과 원래 컬럼명을 섞어 쓸 수 있다.
 /*
 사번      이름      직무      입사일         수당
 7844	TURNER	SALESMAN	81/09/08	0
