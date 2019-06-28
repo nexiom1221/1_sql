@@ -530,6 +530,13 @@ SELECT round(sysdate) "현재 시간"
   FROM dual
 ;
 --문제 : 현재 시간에서 반올림 된 날짜를 시/분/초 까지 출력
-SELECT round(to_char(sysdate,'YYYY-MM-DD HH24:MI:SS')) "현재 시간"
+SELECT to_char(round(sysdate),'YYYY-MM-DD HH24:MI:SS') "오늘 날짜 시분초"
+  FROM dual
+;
+
+SELECT trunc(sysdate) "현재 시간에서 시분초 버림"
+  FROM dual
+;
+SELECT to_char(trunc(sysdate),'YYYY-MM-DD HH24:MI:SS') "현재 시간에서 시분초 버림"
   FROM dual
 ;
