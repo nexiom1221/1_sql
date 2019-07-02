@@ -435,3 +435,68 @@ SELECT c.table_name
     OR c.table_name LIKE 'SUB_TABLE%'
  ORDER BY c.table_name
 ;
+
+-- 테이블 이름의 변경 : RENAME 
+-- 예) MARCH_MEMBER ====> MEMBER_OF_MARCH
+RENAME MARCH_MEMBER TO MEMBER_OF_MARCH;
+
+RENAME MEMBER_OF_MARCH TO MARCH_MEMBER;
+
+-- 테이블 삭제 : DROP
+-- 두 테이블 사이에 REFERENCE (FOREIGN KEY) 관계가 있을 때의 삭제
+
+-- 예) MAIN_TABLE1 의 경우 SUB_TABLE1 에 의해 ID 컬럼이 참조되고 있는 상태
+
+-- 1) MAIN_TABLE1 삭제 구문
+DROP TABLE MAIN_TABLE1;
+/*
+DROP TABLE MAIN_TABLE1
+오류 보고 -
+ORA-02449: 외래 키에 의해 참조되는 고유/기본 키가 테이블에 있습니다
+02449. 00000 -  "unique/primary keys in table referenced by foreign keys"
+*Cause:    An attempt was made to drop a table with unique or
+           primary keys referenced by foreign keys in another table.
+*Action:   Before performing the above operations the table, drop the
+           foreign key constraints in other tables. You can see what
+           constraints are referencing a table by issuing the following
+           command:
+           SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = "tabnam";
+*/
+-- SUB_TABLE1 이 MAIN_TABLE1 의 ID 컬럼을 참조하고 있기 때문에
+-- 테이블 삭제시 순서가 필요하다.
+
+-- 2) SUB_TABLE1 먼저 삭제 후 MAIN_TABLE1 삭제
+DROP TABLE SUB_TABLE1;
+DROP TABLE MAIN_TABLE1;
+
+
+-- 3) 참조 관계에 상관없이 관계를 끊으면서 삭제
+DROP TABLE MAIN_TABLE2 CASCADE CONSTRAINT;
+
+SELECT c.table_name
+      ,c.constraint_name
+      ,c.constraint_type
+  FROM user_constraints c
+ WHERE c.table_name LIKE 'MAIN_TABLE2'
+    OR c.table_name LIKE 'SUB_TABLE2'
+ ORDER BY c.table_name
+;
+-- CASCADE 옵션으로 테이블 삭제하면
+-- 위의 쿼리 결과 : 인출된 모든 행 : 0 이 된다.
+-- 즉, 제약조건을 모두 삭제하며 테이블을 DROP 함
+-- 특히 이 결과에서 SUB_TABLE2 에 있던 R 제약조건이 같이 사라졌음을 확인.
+
+-- SUB_TABLE3 을 DROP 한 뒤, user_constraints 에서 관련 행이 사라짐을 확인.
+DROP TABLE SUB_TABLE3;
+
+SELECT c.table_name
+      ,c.constraint_name
+      ,c.constraint_type
+  FROM user_constraints c
+ WHERE c.table_name LIKE 'MAIN_TABLE3'
+    OR c.table_name LIKE 'SUB_TABLE3'
+ ORDER BY c.table_name
+;
+
+-- SUB_TABLE3 을 DROP 해도 MAIN_TABLE3 의 제약조건에는
+-- 영향을 미치지 않음을 확인.
