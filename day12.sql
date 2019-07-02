@@ -388,3 +388,50 @@ CREATE TABLE SUB_TABLE3
  -- 복합키로 PK를 삼으려는 경우는 반드시 제약조건 추가로만 생성가능
  ,CONSTRAINT PK_SUB3 PRIMARY KEY (ID, BIRTH_YEAR)
 );
+
+
+
+--- 4. 테이블 정의 후 테이블 수정(ALTER TABLE)로 제약조건 추가
+DROP TABLE MAIN_TABLE4;
+-- 1) MAIN_TABLE4 정의 구문
+CREATE TABLE MAIN_TABLE4
+( ID           VARCHAR2(10) 
+ ,NICKNAME     VARCHAR2(30) 
+ ,REG_DATE     DATE         DEFAULT SYSDATE
+ ,GENDER       VARCHAR2(1)  
+ ,MESSAGE      VARCHAR2(300) 
+);
+-- 2) 제약조건 추가 구문
+ALTER TABLE MAIN_TABLE4 ADD 
+( CONSTRAINT PK_MAIN4     PRIMARY KEY (ID)
+ ,CONSTRAINT UQ_NICKNAME4 UNIQUE (NICKNAME)
+ ,CONSTRAINT CK_GENDER4   CHECK (GENDER IN('M','F'))
+);
+
+-- SUB_TABLE4 가 존재하면 삭제
+DROP TABLE SUB_TABLE4;
+
+-- 3) SUB_TABLE4 정의 구문
+CREATE TABLE SUB_TABLE4
+( ID          VARCHAR2(10)
+ ,HOBBY       VARCHAR2(200)
+ ,BIRTH_YEAR  NUMBER(4)
+);
+
+-- 4) SUB_TABLE4 에 제약조건 추가
+ALTER TABLE SUB_TABLE4 ADD
+( CONSTRAINT FK_SUB4 FOREIGN KEY(ID) REFERENCES MAIN_TABLE4(ID)
+ ,CONSTRAINT PK_SUB4 PRIMARY KEY (ID, BIRTH_YEAR)
+);
+
+-- 시스템 카탈로그 : user_constraints 에서
+-- 생성된 제약조건 확인
+
+SELECT c.table_name
+      ,c.constraint_name
+      ,c.constraint_type
+  FROM user_constraints c
+ WHERE c.table_name LIKE 'MAIN_TABLE%'
+    OR c.table_name LIKE 'SUB_TABLE%'
+ ORDER BY c.table_name
+;
